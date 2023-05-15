@@ -4,10 +4,11 @@
     const score_base = 100;
     const width = 800;
     const height = width;
-    const block_size = 10;
+    const block_size = 20;
     let score = 0;
-    let time_to_update = 300;
-    let time_to_update_step = 0.9;
+    const initial_time_to_update = 300;
+    let time_to_update = initial_time_to_update;
+    let time_to_update_step = 0.8;
     let canvas: HTMLCanvasElement | null;
     let ctx: CanvasRenderingContext2D | null;
     let animation_frame = NaN;
@@ -127,12 +128,11 @@
         const head = snake.at(-1);
         if (!head) return snake;
         for (let i = 0; i < snake.length - 1; i++) {
-            snake[i] = { ...snake[i + 1] };
+            snake[i] = snake[i + 1];
         }
 
         const { x, y } = get_new_head_position(head, direction);
-        head.x = x;
-        head.y = y;
+        snake[snake.length - 1] = make_position(x, y);
 
         return snake;
     }
@@ -179,6 +179,7 @@
 
             if (if_bang_into_self(snake)) {
                 score = 0;
+                time_to_update = initial_time_to_update;
                 did_eat_apple = false;
                 snake = [make_random_position()];
             }
@@ -197,10 +198,10 @@
     });
 </script>
 
-<h1>Snake Svelte (Cause I am bored)</h1>
-<canvas bind:this={canvas} id="canvas" {width} {height} />
-<h1>Score: {score}</h1>
 <svelte:window on:keydown={on_keydown} />
+<h1>Snake Svelte (Cause I am bored)</h1>
+<h1>Score: {score}</h1>
+<canvas bind:this={canvas} id="canvas" {width} {height} />
 
 <style>
     canvas {
